@@ -31,8 +31,10 @@ en el repositorio, nunca en la página o en un server action directamente.
 
 ## Regla 2 — Autorización en la capa de datos, no en el middleware
 
-`middleware.ts` solo redirige si no hay sesión activa. La verificación real
-de permisos ocurre en cada server action / route handler, llamando a:
+`proxy.ts` (Next.js 16 renombró la convención `middleware.ts` a `proxy.ts`;
+el archivo cumple el mismo rol de siempre) solo redirige si no hay sesión
+activa. La verificación real de permisos ocurre en cada server action / route
+handler, llamando a:
 
 ```ts
 const user = await requirePermission("recurso:accion:scope")

@@ -183,9 +183,10 @@ depende de que esto quede bien.
   desde el panel más adelante).
 - Página de login. Sin registro público — los usuarios se crean solo desde
   el panel admin o el seed inicial.
-- Middleware (`middleware.ts`) que **solo** redirige si no hay sesión; la
+- Proxy (`proxy.ts` — Next.js 16 renombró la convención `middleware.ts` a
+  `proxy.ts`, mismo rol) que **solo** redirige si no hay sesión; la
   verificación real de permisos vive en la capa de datos (Fase 2), nunca en
-  el middleware.
+  el proxy.
 - **Criterio de aceptación**: login funcional, cookie de sesión persistida,
   logout funcional, ruta protegida redirige a `/login` sin sesión.
 
