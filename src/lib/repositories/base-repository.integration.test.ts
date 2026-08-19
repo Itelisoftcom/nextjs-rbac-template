@@ -46,7 +46,7 @@ async function createTestUser(email: string, actingAs: string | null = null) {
   const id = randomUUID();
   createdUserIds.push(id);
   return runWithRequestContext({ userId: actingAs, ip: "127.0.0.1", userAgent: "vitest" }, () =>
-    repo.create({ id, email } as (typeof users)["$inferInsert"]),
+    repo.create({ id, email, name: "Test User" } as (typeof users)["$inferInsert"]),
   );
 }
 

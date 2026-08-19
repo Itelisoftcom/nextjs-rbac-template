@@ -15,6 +15,20 @@
       "when": 1787158869994,
       "tag": "0001_yielding_ezekiel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787161544349,
+      "tag": "0002_tidy_prism",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1787161575588,
+      "tag": "0003_bent_lester",
+      "breakpoints": true
     }
   ]
 }

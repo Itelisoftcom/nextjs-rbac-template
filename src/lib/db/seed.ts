@@ -1,9 +1,10 @@
 import "dotenv/config";
 import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { eq } from "drizzle-orm";
+import { hashPassword } from "better-auth/crypto";
+import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { permissions, roles, rolePermissions } from "@/lib/db/schema";
+import { accounts, permissions, roles, rolePermissions, userRoles, users } from "@/lib/db/schema";
 import { permissionsCatalog } from "@/lib/auth/permissions-catalog";
 import { FULL_ACCESS_ROLE_CODES, SYSTEM_ROLE_CODES } from "@/lib/auth/system-roles";
 
@@ -67,6 +68,58 @@ async function replaceRolePermissions(roleId: string, permissionIds: string[]) {
   }
 }
 
+/**
+ * Crea el usuario super admin desde SEED_ADMIN_EMAIL/SEED_ADMIN_PASSWORD si
+ * no existe todavía. No toca la contraseña de un usuario ya existente — solo
+ * se hashea una vez, en la creación.
+ */
+async function ensureSuperAdminUser(superAdminRoleId: string) {
+  const email = process.env.SEED_ADMIN_EMAIL;
+  const password = process.env.SEED_ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    console.warn(
+      "SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD no están definidas: se omite la creación del usuario super admin.",
+    );
+    return;
+  }
+
+  const [existing] = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.email, email), isNull(users.deletedAt)));
+
+  const userId = existing?.id ?? randomUUID();
+
+  if (!existing) {
+    await db.insert(users).values({
+      id: userId,
+      email,
+      name: "Super Admin",
+      emailVerified: true,
+      isActive: true,
+    });
+
+    await db.insert(accounts).values({
+      id: randomUUID(),
+      userId,
+      providerId: "credential",
+      issuer: "local:credential",
+      accountId: userId,
+      password: await hashPassword(password),
+    });
+  }
+
+  const [existingRoleLink] = await db
+    .select()
+    .from(userRoles)
+    .where(and(eq(userRoles.userId, userId), eq(userRoles.roleId, superAdminRoleId)));
+
+  if (!existingRoleLink) {
+    await db.insert(userRoles).values({ userId, roleId: superAdminRoleId });
+  }
+}
+
 export async function seed() {
   const allPermissions = await syncPermissionsCatalog();
   const wildcardPermission = allPermissions.find((p) => p.key === "*:*");
@@ -101,6 +154,8 @@ export async function seed() {
       await replaceRolePermissions(administrador.id, nonWildcardPermissionIds);
     }
   }
+
+  await ensureSuperAdminUser(superAdmin.id);
 }
 
 const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
