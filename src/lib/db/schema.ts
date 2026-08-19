@@ -19,12 +19,24 @@ export const users = pgTable("users", {
 
 export const roles = pgTable("roles", {
   id: text("id").primaryKey(),
-  name: text("name").notNull().unique(),
+  name: text("name").notNull(),
+  // Identificador estable para roles sembrados (ej. "super_admin", "administrador").
+  // Null para roles creados desde el panel. Permite que el seed los reconozca
+  // aunque el nombre visible haya sido editado.
+  code: text("code"),
   description: text("description"),
   isSystem: boolean("is_system").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
   deletedAt: timestamp("deleted_at", { withTimezone: true }),
-});
+}, (table) => ({
+  nameActiveIdx: uniqueIndex("idx_roles_name_active")
+    .on(table.name)
+    .where(sql`${table.deletedAt} IS NULL`),
+  codeActiveIdx: uniqueIndex("idx_roles_code_active")
+    .on(table.code)
+    .where(sql`${table.deletedAt} IS NULL`),
+}));
 
 export const permissions = pgTable("permissions", {
   id: text("id").primaryKey(),
