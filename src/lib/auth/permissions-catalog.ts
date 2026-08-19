@@ -1,3 +1,5 @@
+import { adminPermissions } from "@/lib/auth/admin-permissions";
+
 export type PermissionDefinition = {
   key: string;
   description: string;
@@ -7,4 +9,7 @@ const corePermissions: PermissionDefinition[] = [
   { key: "*:*", description: "Acceso total a todos los recursos (reservado para super_admin)" },
 ];
 
-export const permissionsCatalog: PermissionDefinition[] = [...corePermissions];
+export const permissionsCatalog: PermissionDefinition[] = [
+  ...corePermissions,
+  ...adminPermissions,
+];

@@ -69,6 +69,16 @@ async function getEffectivePermissionKeys(userId: string) {
   return { granted: [...granted], denied: [...denied] };
 }
 
+/**
+ * Chequeo puro, sin lanzar: para uso cosmético (ej. <Can>). Nunca sustituye
+ * a requirePermission en la capa de datos (Regla 2).
+ */
+export async function hasPermission(userId: string, key: string): Promise<boolean> {
+  const { granted, denied } = await getEffectivePermissionKeys(userId);
+  if (denied.some((d) => permissionCovers(d, key))) return false;
+  return granted.some((g) => permissionCovers(g, key));
+}
+
 export async function requirePermission(key: string) {
   const { userId } = getRequestContext();
   if (!userId) throw new UnauthorizedError();

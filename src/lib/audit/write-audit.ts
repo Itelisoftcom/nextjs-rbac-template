@@ -14,6 +14,15 @@ type WriteAuditParams = {
   after?: Record<string, unknown> | null;
 };
 
+function valuesEqual(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
+  if (typeof a === "object" && typeof b === "object" && a !== null && b !== null) {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+  return false;
+}
+
 function diffFields(
   before: Record<string, unknown> | null | undefined,
   after: Record<string, unknown> | null | undefined,
@@ -24,7 +33,7 @@ function diffFields(
   const diff: Record<string, { before: unknown; after: unknown }> = {};
   const keys = new Set([...Object.keys(b), ...Object.keys(a)]);
   for (const key of keys) {
-    if (b[key] !== a[key]) {
+    if (!valuesEqual(b[key], a[key])) {
       diff[key] = { before: b[key] ?? null, after: a[key] ?? null };
     }
   }
