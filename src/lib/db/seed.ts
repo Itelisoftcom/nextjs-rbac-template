@@ -98,6 +98,7 @@ async function ensureSuperAdminUser(superAdminRoleId: string) {
       name: "Super Admin",
       emailVerified: true,
       isActive: true,
+      mustChangePassword: true,
     });
 
     await db.insert(accounts).values({

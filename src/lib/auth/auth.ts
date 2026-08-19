@@ -18,6 +18,18 @@ export const auth = betterAuth({
     // solo desde el panel admin o el seed inicial.
     disableSignUp: true,
   },
+  user: {
+    additionalFields: {
+      mustChangePassword: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+        // No seteable vía sign-up/update-user público; solo lo tocamos
+        // nosotros (seed.ts y el server action de cambio de contraseña).
+        input: false,
+      },
+    },
+  },
   databaseHooks: {
     session: {
       create: {

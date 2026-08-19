@@ -9,6 +9,9 @@ export const users = pgTable("users", {
   // panel admin o el seed, nunca un registro público, así que nacen verificados.
   emailVerified: boolean("email_verified").notNull().default(true),
   image: text("image"),
+  // Fase 4: fuerza el cambio de contraseña en el primer login del super
+  // admin sembrado. Campo custom de Better Auth (user.additionalFields).
+  mustChangePassword: boolean("must_change_password").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
   theme: text("theme").default("system"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
