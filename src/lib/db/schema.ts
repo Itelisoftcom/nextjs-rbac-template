@@ -1,4 +1,13 @@
-import { pgTable, text, boolean, timestamp, serial, jsonb, uniqueIndex } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  boolean,
+  timestamp,
+  serial,
+  jsonb,
+  uniqueIndex,
+  type AnyPgColumn,
+} from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 export const users = pgTable("users", {
@@ -13,13 +22,38 @@ export const users = pgTable("users", {
   // admin sembrado. Campo custom de Better Auth (user.additionalFields).
   mustChangePassword: boolean("must_change_password").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
-  theme: text("theme").default("system"),
+  // Fase 6: modo claro/oscuro/sistema (siempre aplica) y, opcionalmente, un
+  // tema personalizado (paleta) publicado por un admin. Si el tema elegido
+  // se borra, cae a null (paleta default) — cascada intencional, no hay
+  // pérdida de datos ni estado roto.
+  colorMode: text("color_mode", { enum: ["light", "dark", "system"] }).notNull().default("system"),
+  themeId: text("theme_id").references((): AnyPgColumn => themes.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }),
   deletedAt: timestamp("deleted_at", { withTimezone: true }),
 }, (table) => ({
   emailActiveIdx: uniqueIndex("idx_users_email_active")
     .on(table.email)
+    .where(sql`${table.deletedAt} IS NULL`),
+}));
+
+export const themes = pgTable("themes", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull(),
+  // Colores base (hex) elegidos por el admin, por modo — se guardan para
+  // poder re-editarlos; el resto de la paleta (18 variables) se deriva una
+  // sola vez al guardar (ver derive-palette.ts) y también se guarda acá.
+  lightSeed: jsonb("light_seed").notNull(),
+  lightPalette: jsonb("light_palette").notNull(),
+  darkSeed: jsonb("dark_seed").notNull(),
+  darkPalette: jsonb("dark_palette").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+}, (table) => ({
+  slugActiveIdx: uniqueIndex("idx_themes_slug_active")
+    .on(table.slug)
     .where(sql`${table.deletedAt} IS NULL`),
 }));
 

@@ -18,4 +18,9 @@ export const adminPermissions: PermissionDefinition[] = [
 
   { key: "settings:read", description: "Ver la configuración general" },
   { key: "settings:update", description: "Editar la configuración general" },
+
+  { key: "themes:read", description: "Ver los temas disponibles" },
+  { key: "themes:create", description: "Crear temas personalizados" },
+  { key: "themes:update", description: "Editar temas personalizados" },
+  { key: "themes:delete", description: "Borrar temas personalizados" },
 ];

@@ -28,6 +28,21 @@ export const auth = betterAuth({
         // nosotros (seed.ts y el server action de cambio de contraseña).
         input: false,
       },
+      // Fase 6: expuestos en session.user para que el layout raíz resuelva
+      // el tema sin una query aparte. Se escriben solo vía
+      // theme-preference-actions.ts (UserRepository), nunca por la API
+      // pública de Better Auth.
+      colorMode: {
+        type: "string",
+        required: true,
+        defaultValue: "system",
+        input: false,
+      },
+      themeId: {
+        type: "string",
+        required: false,
+        input: false,
+      },
     },
   },
   databaseHooks: {
