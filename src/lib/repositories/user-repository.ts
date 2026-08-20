@@ -48,6 +48,8 @@ export class UserRepository extends BaseRepository<typeof users> {
     name: string;
     password: string;
     mustChangePassword?: boolean;
+    colorMode?: "light" | "dark" | "system";
+    themeId?: string | null;
   }) {
     const id = randomUUID();
 
@@ -59,6 +61,8 @@ export class UserRepository extends BaseRepository<typeof users> {
           email: input.email,
           name: input.name,
           mustChangePassword: input.mustChangePassword ?? false,
+          ...(input.colorMode !== undefined ? { colorMode: input.colorMode } : {}),
+          ...(input.themeId !== undefined ? { themeId: input.themeId } : {}),
         })
         .returning();
 

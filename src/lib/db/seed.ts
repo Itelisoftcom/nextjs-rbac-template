@@ -4,9 +4,10 @@ import { fileURLToPath } from "node:url";
 import { hashPassword } from "better-auth/crypto";
 import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { accounts, permissions, roles, rolePermissions, userRoles, users } from "@/lib/db/schema";
+import { accounts, appSettings, permissions, roles, rolePermissions, userRoles, users } from "@/lib/db/schema";
 import { permissionsCatalog } from "@/lib/auth/permissions-catalog";
 import { FULL_ACCESS_ROLE_CODES, SYSTEM_ROLE_CODES } from "@/lib/auth/system-roles";
+import { APP_SETTINGS_ID } from "@/lib/settings/app-settings";
 
 type RoleRow = typeof roles.$inferSelect;
 
@@ -121,7 +122,15 @@ async function ensureSuperAdminUser(superAdminRoleId: string) {
   }
 }
 
+async function ensureAppSettings() {
+  const [existing] = await db.select().from(appSettings).where(eq(appSettings.id, APP_SETTINGS_ID));
+  if (existing) return;
+  await db.insert(appSettings).values({ id: APP_SETTINGS_ID });
+}
+
 export async function seed() {
+  await ensureAppSettings();
+
   const allPermissions = await syncPermissionsCatalog();
   const wildcardPermission = allPermissions.find((p) => p.key === "*:*");
   if (!wildcardPermission) {

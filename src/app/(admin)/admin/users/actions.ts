@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdminSession } from "@/lib/auth/require-admin-session";
 import { requirePermission } from "@/lib/auth/require-permission";
 import { userRepository } from "@/lib/repositories/user-repository";
+import { getAppSettings } from "@/lib/settings/app-settings";
 
 type ActionResult = { error: string | null };
 
@@ -19,7 +20,13 @@ export async function createUserAction(input: {
   return requireAdminSession(async () => {
     await requirePermission("users:create");
     try {
-      await userRepository.createUser({ ...input, mustChangePassword: true });
+      const settings = await getAppSettings();
+      await userRepository.createUser({
+        ...input,
+        mustChangePassword: true,
+        colorMode: settings.defaultColorMode,
+        themeId: settings.defaultThemeId,
+      });
     } catch (err) {
       return toErrorResult(err, "No se pudo crear el usuario.");
     }

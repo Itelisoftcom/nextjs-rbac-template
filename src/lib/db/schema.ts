@@ -57,6 +57,23 @@ export const themes = pgTable("themes", {
     .where(sql`${table.deletedAt} IS NULL`),
 }));
 
+// Fase 6: configuración global (singleton, id fijo "global" — ver
+// app-settings.ts). appName y fontId aplican a todos, incluso visitantes
+// sin sesión. defaultColorMode/defaultThemeId solo siembran la preferencia
+// de un usuario nuevo al crearlo — no reescriben la de uno que ya eligió.
+export const appSettings = pgTable("app_settings", {
+  id: text("id").primaryKey(),
+  appName: text("app_name").notNull().default("RBAC Admin"),
+  defaultColorMode: text("default_color_mode", { enum: ["light", "dark", "system"] })
+    .notNull()
+    .default("system"),
+  defaultThemeId: text("default_theme_id").references((): AnyPgColumn => themes.id, {
+    onDelete: "set null",
+  }),
+  fontId: text("font_id").notNull().default("geist"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+});
+
 // Tablas de Better Auth. El password vive en accounts.password (provider
 // "credential"), no en users — así lo modela Better Auth internamente.
 export const sessions = pgTable("sessions", {
