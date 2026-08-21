@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,12 @@ export function ThemeSwitcher({
   const { setTheme } = useTheme();
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  // Base UI's <Select.Value> solo muestra la etiqueta si el Root recibe un
+  // mapa value -> label vía `items`; sin esto cae a mostrar el value crudo.
+  const themeItems = useMemo(
+    () => ({ default: "Default", ...Object.fromEntries(availableThemes.map((t) => [t.id, t.name])) }),
+    [availableThemes],
+  );
 
   async function handleColorModeChange(mode: "light" | "dark" | "system") {
     setTheme(mode);
@@ -70,6 +76,7 @@ export function ThemeSwitcher({
       </div>
       {availableThemes.length > 0 ? (
         <Select
+          items={themeItems}
           value={currentThemeId ?? "default"}
           onValueChange={(value) => handleThemeChange(value === "default" ? null : value)}
         >

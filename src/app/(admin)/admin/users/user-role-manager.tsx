@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,12 @@ export function UserRoleManager({
 
   const assignableRoles = availableRoles.filter(
     (r) => !assignedRoles.some((assigned) => assigned.id === r.id),
+  );
+  // Base UI's <Select.Value> solo muestra la etiqueta si el Root recibe un
+  // mapa value -> label vía `items`; sin esto cae a mostrar el value crudo.
+  const roleItems = useMemo(
+    () => Object.fromEntries(assignableRoles.map((r) => [r.id, r.name])),
+    [assignableRoles],
   );
 
   async function handleAssign() {
@@ -82,7 +88,7 @@ export function UserRoleManager({
       </div>
       {assignableRoles.length > 0 ? (
         <div className="flex gap-2">
-          <Select value={selected} onValueChange={(value) => setSelected(value ?? "")}>
+          <Select items={roleItems} value={selected} onValueChange={(value) => setSelected(value ?? "")}>
             <SelectTrigger size="sm" className="w-40">
               <SelectValue placeholder="Agregar rol" />
             </SelectTrigger>

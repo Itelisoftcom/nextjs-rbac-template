@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -47,6 +47,29 @@ export function AppearanceForm({
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Base UI's <Select.Value> solo muestra la etiqueta si el Root recibe un
+  // mapa value -> label vía `items`; sin esto cae a mostrar el value crudo.
+  const fontItems = useMemo(
+    () => Object.fromEntries(fontOptions.map((f) => [f.id, f.label])),
+    [fontOptions],
+  );
+  const borderRadiusItems = useMemo(
+    () => Object.fromEntries(BORDER_RADIUS_PRESETS.map((p) => [String(p.value), p.label])),
+    [],
+  );
+  const fontScaleItems = useMemo(
+    () => Object.fromEntries(FONT_SCALE_PRESETS.map((p) => [String(p.value), p.label])),
+    [],
+  );
+  const colorModeItems = useMemo(
+    () => Object.fromEntries(COLOR_MODE_OPTIONS.map((m) => [m.value, m.label])),
+    [],
+  );
+  const themeItems = useMemo(
+    () => ({ default: "Default", ...Object.fromEntries(availableThemes.map((t) => [t.id, t.name])) }),
+    [availableThemes],
+  );
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -75,7 +98,7 @@ export function AppearanceForm({
     <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
       <div className="flex flex-col gap-2">
         <Label htmlFor="font-select">Fuente</Label>
-        <Select value={fontId} onValueChange={(value) => value && setFontId(value)}>
+        <Select items={fontItems} value={fontId} onValueChange={(value) => value && setFontId(value)}>
           <SelectTrigger id="font-select" className="w-full">
             <SelectValue />
           </SelectTrigger>
@@ -92,6 +115,7 @@ export function AppearanceForm({
       <div className="flex flex-col gap-2">
         <Label htmlFor="border-radius">Redondeado de bordes</Label>
         <Select
+          items={borderRadiusItems}
           value={String(borderRadius)}
           onValueChange={(value) => value && setBorderRadius(Number(value))}
         >
@@ -111,6 +135,7 @@ export function AppearanceForm({
       <div className="flex flex-col gap-2">
         <Label htmlFor="font-scale">Tamaño de fuente</Label>
         <Select
+          items={fontScaleItems}
           value={String(fontScale)}
           onValueChange={(value) => value && setFontScale(Number(value))}
         >
@@ -129,7 +154,11 @@ export function AppearanceForm({
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="default-color-mode">Modo de color por defecto (usuarios nuevos)</Label>
-        <Select value={colorMode} onValueChange={(value) => value && setColorMode(value as typeof colorMode)}>
+        <Select
+          items={colorModeItems}
+          value={colorMode}
+          onValueChange={(value) => value && setColorMode(value as typeof colorMode)}
+        >
           <SelectTrigger id="default-color-mode" className="w-full">
             <SelectValue />
           </SelectTrigger>
@@ -146,6 +175,7 @@ export function AppearanceForm({
       <div className="flex flex-col gap-2">
         <Label htmlFor="default-theme">Tema por defecto (usuarios nuevos)</Label>
         <Select
+          items={themeItems}
           value={themeId ?? "default"}
           onValueChange={(value) => setThemeId(value === "default" ? null : value)}
         >
