@@ -7,13 +7,19 @@ import { updateAppSettings } from "@/lib/settings/app-settings";
 
 type ActionResult = { error: string | null };
 
-export async function updateAppNameAction(appName: string): Promise<ActionResult> {
+export async function updateAppearanceSettingsAction(input: {
+  fontId: string;
+  borderRadius: number;
+  fontScale: number;
+  defaultColorMode: "light" | "dark" | "system";
+  defaultThemeId: string | null;
+}): Promise<ActionResult> {
   return requireAdminSession(async () => {
     await requirePermission("settings:update");
     try {
-      await updateAppSettings({ appName });
+      await updateAppSettings(input);
     } catch (err) {
-      return { error: err instanceof Error ? err.message : "No se pudo guardar la configuración." };
+      return { error: err instanceof Error ? err.message : "No se pudo guardar la apariencia." };
     }
     revalidatePath("/", "layout");
     return { error: null };

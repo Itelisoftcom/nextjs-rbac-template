@@ -6,6 +6,7 @@ import {
   serial,
   jsonb,
   uniqueIndex,
+  real,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
@@ -71,6 +72,11 @@ export const appSettings = pgTable("app_settings", {
     onDelete: "set null",
   }),
   fontId: text("font_id").notNull().default("geist"),
+  // rem — mismo valor que ya usaba globals.css como default (0.625rem).
+  borderRadius: real("border_radius").notNull().default(0.625),
+  // % del font-size base del navegador (100 = sin cambios). Tailwind v4 es
+  // rem-first, así que escalar esto escala casi todo el panel de una.
+  fontScale: real("font_scale").notNull().default(100),
   updatedAt: timestamp("updated_at", { withTimezone: true }),
 });
 

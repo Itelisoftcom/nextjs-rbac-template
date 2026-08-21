@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import type { SeedColors } from "@/lib/theme/derive-palette";
 import { ThemePreview } from "./theme-preview";
-import { createThemeAction, updateThemeAction } from "./actions";
+import { createThemeAction, updateThemeAction } from "./theme-actions";
 
 const DEFAULT_LIGHT_SEED: SeedColors = {
   primary: "#171717",

@@ -50,7 +50,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       data-theme={activeTheme?.slug}
       suppressHydrationWarning
-      style={{ "--font-sans": resolveFontCssVariable(settings.fontId) } as React.CSSProperties}
+      style={
+        {
+          "--font-sans": resolveFontCssVariable(settings.fontId),
+          "--radius": `${settings.borderRadius}rem`,
+          fontSize: `${settings.fontScale}%`,
+        } as React.CSSProperties
+      }
       className={`${fontVariableClassNames()} ${geistMono.variable} h-full antialiased`}
     >
       {activeTheme ? (

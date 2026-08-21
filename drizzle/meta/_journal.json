@@ -57,6 +57,20 @@
       "when": 1787249863891,
       "tag": "0007_adorable_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1787324797069,
+      "tag": "0008_spotty_landau",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1787325516786,
+      "tag": "0009_robust_the_anarchist",
+      "breakpoints": true
     }
   ]
 }

@@ -13,7 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteThemeAction } from "./actions";
+import { deleteThemeAction } from "./theme-actions";
 
 export function DeleteThemeButton({ themeId }: { themeId: string }) {
   const router = useRouter();

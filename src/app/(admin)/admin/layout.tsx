@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { href: "/admin/users", label: "Usuarios", permission: "users:read" },
   { href: "/admin/roles", label: "Roles", permission: "roles:read" },
   { href: "/admin/audit-log", label: "Audit Log", permission: "audit_log:read" },
-  { href: "/admin/themes", label: "Temas", permission: "themes:read" },
+  { href: "/admin/appearance", label: "Apariencia", permission: "settings:read" },
   { href: "/admin/settings", label: "Configuración", permission: "settings:read" },
 ] as const;
 

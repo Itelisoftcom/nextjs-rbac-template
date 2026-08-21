@@ -29,6 +29,8 @@ export async function updateAppSettings(values: {
   defaultColorMode?: "light" | "dark" | "system";
   defaultThemeId?: string | null;
   fontId?: string;
+  borderRadius?: number;
+  fontScale?: number;
 }): Promise<AppSettings> {
   return db.transaction(async (tx) => {
     const [before] = await tx.select().from(appSettings).where(eq(appSettings.id, APP_SETTINGS_ID));
