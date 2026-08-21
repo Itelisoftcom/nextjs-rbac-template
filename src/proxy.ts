@@ -10,7 +10,12 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  // Server Components no reciben el pathname actual directamente — se lo
+  // pasamos vía header para que el layout del panel pueda decidir si
+  // muestra el header de la sección (ver NAV_ITEMS.hideHeader).
+  const headers = new Headers(request.headers);
+  headers.set("x-pathname", request.nextUrl.pathname);
+  return NextResponse.next({ request: { headers } });
 }
 
 export const config = {
